@@ -11,11 +11,8 @@ import (
 
 // VerifyWebhookSignature
 // 文档：https://developer.paypal.com/docs/api/webhooks/v1/#verify-webhook-signature_post
-func (c *Client) VerifyWebhookSignature(ctx context.Context, bm gopay.BodyMap) (verifyRes *VerifyWebhookResponse, err error) {
+func (c *Client) VerifyWebhookSignature(ctx context.Context, bm interface{}) (verifyRes *VerifyWebhookResponse, err error) {
 
-	if err = bm.CheckEmptyError("auth_algo", "cert_url", "transmission_id", "transmission_sig", "transmission_time", "webhook_id", "webhook_event"); err != nil {
-		return nil, err
-	}
 	res, bs, err := c.doPayPalPost(ctx, bm, VerifyWebhookSignature)
 	if err != nil {
 		return nil, err

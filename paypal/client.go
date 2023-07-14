@@ -77,7 +77,7 @@ func (c *Client) doPayPalGet(ctx context.Context, uri string) (res *http.Respons
 	return res, bs, nil
 }
 
-func (c *Client) doPayPalPost(ctx context.Context, bm gopay.BodyMap, path string) (res *http.Response, bs []byte, err error) {
+func (c *Client) doPayPalPost(ctx context.Context, bm interface{}, path string) (res *http.Response, bs []byte, err error) {
 	var url = baseUrlProd + path
 	if !c.IsProd {
 		url = baseUrlSandbox + path
@@ -88,12 +88,13 @@ func (c *Client) doPayPalPost(ctx context.Context, bm gopay.BodyMap, path string
 	}
 	authHeader := AuthorizationPrefixBearer + c.AccessToken
 	if c.DebugSwitch == gopay.DebugOn {
-		xlog.Debugf("PayPal_RequestBody: %s", bm.JsonBody())
+		marshal, _ := json.Marshal(bm)
+		xlog.Debugf("PayPal_RequestBody: %s", marshal)
 		xlog.Debugf("PayPal_Authorization: %s", authHeader)
 	}
 	httpClient.Header.Add(HeaderAuthorization, authHeader)
 	httpClient.Header.Add("Accept", "*/*")
-	res, bs, err = httpClient.Type(xhttp.TypeJSON).Post(url).SendBodyMap(bm).EndBytes(ctx)
+	res, bs, err = httpClient.Type(xhttp.TypeJSON).Post(url).SendStruct(bm).EndBytes(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
