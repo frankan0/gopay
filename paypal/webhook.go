@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-pay/gopay"
+	"github.com/go-pay/gopay/pkg/xlog"
 	"net/http"
 )
 
@@ -18,6 +19,7 @@ func (c *Client) VerifyWebhookSignature(ctx context.Context, bm interface{}) (ve
 		return nil, err
 	}
 	if res.StatusCode != http.StatusOK {
+		xlog.Error("request paypal webhook verify error", bs)
 		return verifyRes, errors.New("request paypal url[verify-webhook-signature_post] error")
 	}
 	verifyRes = &VerifyWebhookResponse{}
